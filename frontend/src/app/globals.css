@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #faf9f4;
+  --surface: #ffffff;
+  --ink: #1c2a1e;
+  --muted: #6b7a6e;
+  --line: #e6e4da;
+  --green: #2e7d32;
+  --green-soft: #e8f3e9;
+  --amber: #b45309;
+  --amber-soft: #fdf3e3;
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--green-soft);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.rise {
+  animation: rise 0.35s ease both;
+}
+
+.thinking-dot {
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+.thinking-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.thinking-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.answer-body p {
+  margin: 0.35rem 0;
+}
+.answer-body ul,
+.answer-body ol {
+  margin: 0.35rem 0 0.35rem 1.1rem;
+  list-style: disc;
+}
+.answer-body ol {
+  list-style: decimal;
+}
+.answer-body strong {
+  color: var(--green);
+}
