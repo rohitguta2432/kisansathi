@@ -114,3 +114,11 @@ automatically.
 
 [MIT](LICENSE). Built to be forked — translate it, add crops, add agents,
 put it on a kiosk in a village. That's the point.
+
+---
+
+### 🤝 Work with me
+
+I'm an **AI Consultant · Forward Deployed Engineer** — I embed with teams and ship AI to production: agents, MCP integrations, and LLM features, with evals proving they work.
+
+**→ [rohitraj.tech/en/hire](https://rohitraj.tech/en/hire)**
