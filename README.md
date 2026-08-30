@@ -44,6 +44,22 @@ streamed answer, in the farmer's language, grounded in real numbers
 The UI shows the pipeline live: which expert picked up the question, what
 language was detected, and the answer streaming token by token.
 
+## Voice — बोलकर पूछें, सुनकर समझें
+
+Typing is a real barrier for many farmers. KisanSathi now talks:
+
+- **🎙️ Speak your question** — press the mic and ask in Hindi, Hinglish or
+  English (browser SpeechRecognition, `hi-IN`). The final transcript is
+  submitted automatically.
+- **🔊 Hear the answer** — every answer has a सुनें button that reads it
+  aloud, picking a Hindi voice for Devanagari answers and an Indian-English
+  voice otherwise (browser speechSynthesis).
+
+Like everything else here it is **keyless** — both run entirely in the
+browser, no speech API accounts, no audio leaves the device beyond what the
+browser's own speech engine does. Works best in Chrome/Edge; the buttons
+hide themselves where the APIs are missing.
+
 ## Why keyless matters
 
 Most farmer-facing AI tools die at the API-key step. KisanSathi runs with

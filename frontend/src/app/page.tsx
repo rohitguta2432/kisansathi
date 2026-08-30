@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AGENTS, SAMPLE_QUESTIONS } from "@/lib/agents";
 import { ask, type RoutedInfo } from "@/lib/ask";
+import { useSpeechInput, useSpeaker } from "@/lib/voice";
 
 type Phase = "idle" | "routing" | "answering";
 
@@ -45,6 +46,9 @@ export default function Home() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const submitRef = useRef<(q?: string) => void>(() => {});
+  const voice = useSpeechInput((text) => submitRef.current(text));
+  const speaker = useSpeaker();
   const activeAgent =
     exchanges.length > 0 ? exchanges[exchanges.length - 1].routed?.agent : undefined;
 
@@ -100,6 +104,7 @@ export default function Home() {
     },
     [input, phase],
   );
+  submitRef.current = submit;
 
   return (
     <div className="flex flex-1 flex-col items-center px-4">
@@ -169,6 +174,13 @@ export default function Home() {
               </p>
               <p className="mt-1 text-xs text-[var(--muted)]">
                 The right expert picks up your question automatically.
+                {voice.supported && (
+                  <>
+                    {" "}
+                    🎙️ दबाकर बोलें, 🔊 से जवाब सुनें — speak your question, hear
+                    the answer.
+                  </>
+                )}
               </p>
               <div className="mt-4 flex flex-wrap justify-center gap-2">
                 {SAMPLE_QUESTIONS.map((q) => (
@@ -218,6 +230,27 @@ export default function Home() {
                       <span className="ml-auto rounded-full bg-[var(--amber-soft)] px-2 py-0.5 text-[10px] font-medium text-[var(--amber)]">
                         {x.routed.language}
                       </span>
+                      {speaker.supported && x.done && !x.error && x.answer && (
+                        <button
+                          onClick={() =>
+                            speaker.speakingIndex === i
+                              ? speaker.stopSpeaking()
+                              : speaker.speak(i, x.answer)
+                          }
+                          title={
+                            speaker.speakingIndex === i
+                              ? "रोकें · Stop"
+                              : "जवाब सुनें · Listen"
+                          }
+                          className={`rounded-full border px-2 py-0.5 text-[11px] font-medium transition ${
+                            speaker.speakingIndex === i
+                              ? "speaking border-[var(--green)] bg-[var(--green-soft)] text-[var(--green)]"
+                              : "border-[var(--line)] text-[var(--muted)] hover:border-[var(--green)] hover:text-[var(--green)]"
+                          }`}
+                        >
+                          {speaker.speakingIndex === i ? "◼ रोकें" : "🔊 सुनें"}
+                        </button>
+                      )}
                     </div>
                   )}
                   {x.error ? (
@@ -247,12 +280,36 @@ export default function Home() {
             className="flex items-center gap-2 rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-2 shadow-sm focus-within:border-[var(--green)]"
           >
             <input
-              value={input}
+              value={voice.listening ? voice.interim : input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="सवाल पूछें… e.g. गेहूं कब बोयें?"
+              placeholder={
+                voice.listening
+                  ? "सुन रहा हूँ… बोलिए"
+                  : "सवाल पूछें… e.g. गेहूं कब बोयें?"
+              }
               className="flex-1 bg-transparent px-2 text-[15px] outline-none placeholder:text-[var(--muted)]"
-              disabled={phase !== "idle"}
+              disabled={phase !== "idle" || voice.listening}
             />
+            {voice.supported && (
+              <button
+                type="button"
+                onClick={() => (voice.listening ? voice.stop() : voice.start())}
+                disabled={phase !== "idle"}
+                title={
+                  voice.listening
+                    ? "रुकें · Stop listening"
+                    : "बोलकर पूछें · Ask by voice"
+                }
+                aria-label="Ask by voice"
+                className={`grid h-10 w-10 place-items-center rounded-xl border text-lg transition disabled:opacity-40 ${
+                  voice.listening
+                    ? "mic-live border-red-500 bg-red-50 text-red-600"
+                    : "border-[var(--line)] bg-[var(--bg)] hover:border-[var(--green)] hover:bg-[var(--green-soft)]"
+                }`}
+              >
+                🎙️
+              </button>
+            )}
             <button
               type="submit"
               disabled={phase !== "idle" || !input.trim()}
